@@ -1,0 +1,45 @@
+# ==========================================
+# Petstore-Catalog Custom Ignores
+# ==========================================
+# Ignore app-specific logs
+*.log
+logs/
+*.out
+
+# Ignore local environment files (contains secrets/database credentials)
+.env
+.flaskenv
+
+# ==========================================
+# Python & Virtual Environments
+# ==========================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Pipenv & Poetry dependency locks (uncomment if you want to ignore them, 
+# though committing them is usually recommended for apps)
+#.pypirc
+
+# ==========================================
+# Docker & OS Clutter
+# ==========================================
+# Ignore docker-compose override files if they contain local development secrets
+# docker-compose.override.yml
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
