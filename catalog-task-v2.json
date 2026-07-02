@@ -1,0 +1,32 @@
+{
+  "family": "catalog-service",
+  "networkMode": "bridge",
+  "requiresCompatibilities": [
+    "EC2"
+  ],
+  "executionRoleArn": "arn:aws:iam::854727438903:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "catalog",
+      "image": "854727438903.dkr.ecr.eu-north-1.amazonaws.com/petstore-catalog:latest",
+      "cpu": 128,
+      "memory": 128,
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 5000,
+          "hostPort": 8080,
+          "protocol": "tcp"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/catalog-service",
+          "awslogs-region": "eu-north-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}
