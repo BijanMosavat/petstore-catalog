@@ -10,6 +10,7 @@ def configure_comprehend_telemetry(service_name: str, app=None):
         from comprehend_telemetry import ComprehendDevSpanProcessor
         from opentelemetry import trace
         from opentelemetry.instrumentation.flask import FlaskInstrumentor
+        from opentelemetry.instrumentation.psycopg2 import Psycopg2Instrumentor
         from opentelemetry.sdk.resources import Resource
         from opentelemetry.sdk.trace import TracerProvider
     except ImportError:
@@ -20,20 +21,27 @@ def configure_comprehend_telemetry(service_name: str, app=None):
         "deployment.environment": os.getenv("OTEL_ENVIRONMENT", "prod"),
     })
 
-    tracer_provider = TracerProvider(resource=resource)
-    tracer_provider.add_span_processor(
-        ComprehendDevSpanProcessor(
-            organization="bijan-sandbox",
-            token=token,
-            debug=False,
-        )
+    span_processor = ComprehendDevSpanProcessor(
+        organization="bijan-sandbox",
+        token=token,
+        debug=False,
     )
+
+    tracer_provider = TracerProvider(resource=resource)
+    tracer_provider.add_span_processor(span_processor)
 
     current_tracer_provider = trace.get_tracer_provider()
     if current_tracer_provider.__class__.__name__ == "ProxyTracerProvider":
         trace.set_tracer_provider(tracer_provider)
+        active_tracer_provider = trace.get_tracer_provider()
+    else:
+        active_tracer_provider = current_tracer_provider
+        if hasattr(active_tracer_provider, "add_span_processor"):
+            active_tracer_provider.add_span_processor(span_processor)
 
     if app is not None:
         FlaskInstrumentor().instrument_app(app)
 
-    return tracer_provider
+    Psycopg2Instrumentor().instrument()
+
+    return active_tracer_provider
